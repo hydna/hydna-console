@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hydna Console Demo</title>
+    <script type="text/javascript" src="http://static.hydna.net/js/hydna.js"></script>
+    <script type="text/javascript" src="../hydna_console.js"></script>
+    <script type="text/javascript">
+      function onload() {
+        var connectDialog = document.getElementById("connect-dialog");
+        var messageDialog = document.getElementById("message-dialog");
+        var messages = document.getElementById("messages");
+        var connect = document.getElementById("connect");
+        var disconnect = document.getElementById("disconnect");
+        var domain = document.getElementById("domain");
+        var token = document.getElementById("token");
+        var hconsole;
+
+        connect.onclick = function() {
+
+          if (domain.value.length == 0) {
+            alert("Please enter a valid domain");
+            return;
+          }
+
+          hconsole = new HydnaConsole(domain.value, {
+            token: token.value || ""
+          });
+
+          hconsole.onopen = function() {
+            connectDialog.className = "hide"
+            messageDialog.className = "";
+          }
+
+          hconsole.onmessage = function(type, data) {
+            var li = document.createElement("li");
+            li.className = type;
+            li.innerText = type.toUpperCase() + ": " + data;
+            messages.appendChild(li);
+          }
+
+          hconsole.onerror = function(err) {
+            alert(err.message);
+          }
+
+          hconsole.onclose = function() {
+            connectDialog.className = ""
+            messageDialog.className = "hide";
+          }
+        }
+
+        disconnect.onclick = function() {
+          if (hconsole) {
+            hconsole.close();
+          }
+        }
+      }
+    </script>
+    <style type="text/css" media="screen">
+
+      .disclaimer {
+        font-style: italic;
+        font-size: 0.9em;
+      }
+
+      #connect-dialog.hide {
+        display: none;
+      }
+      
+      #connect-dialog ul li {
+        list-style: none;
+      }
+
+      #connect-dialog ul span {
+        display: inline-block;
+        list-style: none;
+        width: 150px;
+      }
+
+      #message-dialog.hide {
+        display: none;
+      }
+
+      #message-dialog #messages {
+        list-style: none;
+      }
+
+      #message-dialog #messages .debug {
+        color: grey;
+      }
+
+      #message-dialog #messages .info {
+        
+      }
+
+      #message-dialog #messages .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body onload="onload()">
+    <div id="connect-dialog">
+      <p>Connect to your Hydna domain and monitor errors and log-messages</p>
+      <p class="disclaimer">Please note that this demo assumes that you are
+        using the default channels.</p>
+      <ul>
+        <li><span>Enter your domain:</span><input id="domain"></li>
+        <li><span>Enter access token:</span><input id="token"></li>
+      </ul>
+      <button id="connect">Connect to server</button>
+    </div>
+    <div id="message-dialog" class="hide">
+      <button id="disconnect">Disconnect from server</button>
+      <ul id="messages">
+        <li class="debug">Waiting for messages to arrive...</li>
+      </ul>
+    </div>
+  </body>
+</html>
