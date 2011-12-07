@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Hydna Console Demo</title>
-    <script type="text/javascript" src="http://static.hydna.net/js/hydna.js"></script>
+    <script type="text/javascript" src="http://cdn.hydna.com/1/hydna.js"></script>
     <script type="text/javascript" src="../hydna_console.js"></script>
     <script type="text/javascript">
       function onload() {
@@ -16,6 +16,7 @@
         var hconsole;
 
         connect.onclick = function() {
+console.log("klick");
 
           if (domain.value.length == 0) {
             alert("Please enter a valid domain");

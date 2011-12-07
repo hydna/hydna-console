@@ -36,7 +36,7 @@ function HydnaConsole(domain, opts) {
   var token;
   var uri;
 
-  if (typeof HydnaStream !== "function") {
+  if (typeof HydnaChannel !== "function") {
     throw new Error("HydnaConsole requires hydna.js");
   }
 
@@ -51,7 +51,7 @@ function HydnaConsole(domain, opts) {
     }
   }
 
-  function onmessage(data) {
+  function onmessage(event) {
     var type = "info";
 
     switch (this) {
@@ -60,7 +60,7 @@ function HydnaConsole(domain, opts) {
       case self.errorStream: type = "error"; break;
     }
 
-    self.onmessage && self.onmessage.call(this, type, data);
+    self.onmessage && self.onmessage.call(this, type, event.data);
   }
 
   function onerror(err) {
@@ -72,8 +72,8 @@ function HydnaConsole(domain, opts) {
   if ("disableDebug" in opts == false) {
     channel = opts.debugChannel || 0xFFFFFFF0;
     token = opts.debugToken || opts.token || null;
-    uri = domain + "/" + channel + (token ? "?" + token : ""); 
-    this.debugStream = new HydnaStream(uri, "r");
+    uri = domain + "/" + channel + (token ? "?" + token : "");
+    this.debugStream = new HydnaChannel(uri, "r");
     this.debugStream.onopen = onopen;
     this.debugStream.onmessage = onmessage;
     this.debugStream.onerror = onerror;
@@ -83,8 +83,8 @@ function HydnaConsole(domain, opts) {
   if ("disableInfo" in opts == false) {
     channel = opts.infoChannel || 0xFFFFFFF1;
     token = opts.infoToken || opts.token || null;
-    uri = domain + "/" + channel + (token ? "?" + token : ""); 
-    this.infoStream = new HydnaStream(uri, "r");
+    uri = domain + "/" + channel + (token ? "?" + token : "");
+    this.infoStream = new HydnaChannel(uri, "r");
     this.infoStream.onopen = onopen;
     this.infoStream.onmessage = onmessage;
     this.infoStream.onerror = onerror;
@@ -94,8 +94,8 @@ function HydnaConsole(domain, opts) {
   if ("disableError" in opts == false) {
     channel = opts.errorChannel || 0xFFFFFFF2;
     token = opts.errorToken || opts.token || null;
-    uri = domain + "/" + channel + (token ? "?" + token : ""); 
-    this.errorStream = new HydnaStream(uri, "r");
+    uri = domain + "/" + channel + (token ? "?" + token : "");
+    this.errorStream = new HydnaChannel(uri, "r");
     this.errorStream.onopen = onopen;
     this.errorStream.onmessage = onmessage;
     this.errorStream.onerror = onerror;
@@ -115,7 +115,7 @@ HydnaConsole.prototype.close = function() {
     this.infoStream.close();
     this.infoStream = null;
   }
-  
+
   if (this.errorStream) {
     this.errorStream.close();
     this.errorStream = null;
